@@ -1,0 +1,666 @@
+/* Resume Fit —— 视觉方向：测量仪器，不是简历美化工具。
+   琥珀色在全应用只有一个含义：改写就能补回来的差距。 */
+
+:root {
+  --ground: #23262b;
+  --ground-2: #2c3037;
+  --rail-ink: #b9bfc8;
+  --rail-ink-dim: #7c848f;
+
+  --paper: #f7f7f5;
+  --surface: #ffffff;
+  --ink: #1a1c20;
+  --ink-2: #4e545d;
+  --ink-3: #7c848f;
+  --line: #dcdcd7;
+  --line-2: #ebebe7;
+
+  --capability: #2f5fd0;
+  --presentation: #7c848f;
+  --gap: #cf8f11;
+  --gap-wash: #fdf4e0;
+  --confirmed: #1f7a5a;
+  --confirmed-wash: #e8f1ec;
+  --risk: #b8442c;
+  --risk-wash: #fbefec;
+
+  --rail-w: 15rem;
+  --step: 0.75rem;
+
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, "PingFang SC", monospace;
+
+  color-scheme: light;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+/* 所有「数据」都用等宽：事实 ID、分数、版本号、时间。
+   这是这套界面的字体人格 —— 它读起来像一份测量记录。 */
+.data {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 小标签：等宽 + 宽字距，用于分区眉题和状态词 */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 0.5rem;
+}
+
+/* ---------- 骨架 ---------- */
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  min-height: 100vh;
+  /* 侧栏是 sticky 的，只有视口高；底色画在栅格列上才不会在长页面下方露白。 */
+  background: linear-gradient(
+    to right,
+    var(--ground) 0 var(--rail-w),
+    var(--paper) var(--rail-w)
+  );
+}
+
+.rail {
+  background: var(--ground);
+  color: var(--rail-ink);
+  padding: 1.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.mark {
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin: 0;
+}
+
+.mark-sub {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rail-ink-dim);
+  margin: 0.25rem 0 0;
+}
+
+.rail nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+/* 主流程有编号（它确实是一条序列）；可选模块没有编号 —— 结构本身在说明这件事。 */
+.rail-group {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rail-ink-dim);
+  margin: 1.25rem 0 0.5rem;
+}
+
+.rail button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--rail-ink);
+  font: inherit;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.3125rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.rail button:hover {
+  background: var(--ground-2);
+  color: #fff;
+}
+
+.rail button[aria-current="page"] {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.rail-count {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--rail-ink-dim);
+}
+
+.rail button[aria-current="page"] .rail-count {
+  color: var(--ink-3);
+}
+
+.rail-foot {
+  margin-top: auto;
+  font-size: 0.75rem;
+  color: var(--rail-ink-dim);
+  line-height: 1.5;
+}
+
+main {
+  padding: 2.5rem 3rem 5rem;
+  max-width: 64rem;
+}
+
+@media (max-width: 52rem) {
+  .shell {
+    grid-template-columns: 1fr;
+    background: var(--paper);
+  }
+  .rail {
+    position: static;
+    height: auto;
+  }
+  .rail nav {
+    flex-flow: row wrap;
+    gap: 0.375rem;
+  }
+  /* 分组标题在窄屏也要独占一行，否则会被读成并列的导航项 */
+  .rail-group {
+    flex: 0 0 100%;
+    margin: 0.75rem 0 0;
+  }
+  main {
+    padding: 1.5rem 1.25rem 3rem;
+  }
+}
+
+/* ---------- 排版 ---------- */
+
+.page-head {
+  margin-bottom: 2.5rem;
+}
+
+h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.5rem;
+}
+
+.lede {
+  color: var(--ink-2);
+  max-width: 44rem;
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.1875rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 650;
+  margin: 1.5rem 0 0.375rem;
+}
+
+h4 {
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--ink-2);
+  margin: 1.125rem 0 0.25rem;
+}
+
+p {
+  margin: 0 0 0.75rem;
+}
+
+.hint {
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  margin: 0.375rem 0;
+}
+
+/* ---------- 步骤卡 ---------- */
+
+.step {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0 1.25rem;
+}
+
+.step[data-locked="true"] {
+  opacity: 0.5;
+}
+
+.step-n {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  margin-top: 0.125rem;
+}
+
+.step[data-done="true"] .step-n {
+  background: var(--confirmed);
+  border-color: var(--confirmed);
+  color: #fff;
+}
+
+.step-body > :first-child {
+  margin-top: 0;
+}
+
+.step-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ---------- 签名元素：对照标尺 ----------
+   能力实心、呈现空心、两者之差用琥珀斜纹填充。
+   一张图说完整个产品的主张：没有新事实时，润色只能把空心条推上去。 */
+
+.gauge {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  padding: 1.75rem;
+}
+
+.gauge-track {
+  position: relative;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.gauge-row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr) 4.5rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.gauge-name {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.gauge-bar {
+  position: relative;
+  height: 1.5rem;
+  background: var(--line-2);
+  border-radius: 0.1875rem;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 0.1875rem;
+}
+
+.gauge-fill[data-metric="capability"] {
+  background: var(--capability);
+}
+
+/* 岗位重心不是「能力」，用中性色 —— 蓝色在这套界面里只表示能力。 */
+.gauge-fill[data-metric="share"] {
+  background: var(--ink-2);
+}
+
+/* 呈现度是空心的 —— 它是「展示出来的」，不是「拥有的」 */
+.gauge-fill[data-metric="presentation"] {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--presentation) 0 1px,
+    transparent 1px 5px
+  );
+  border: 1px solid var(--presentation);
+}
+
+.gauge-value {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9375rem;
+  text-align: right;
+}
+
+/* 斜纹带与坐标轴共用同一条轨道，位置就是真实位置 */
+.gauge-lane {
+  position: relative;
+  display: block;
+}
+
+.gauge-delta {
+  padding-top: 0.375rem;
+}
+
+.gauge-hatch {
+  position: absolute;
+  top: 0;
+  height: 1.125rem;
+  border-radius: 0.1875rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--gap) 0 2px,
+    var(--gap-wash) 2px 7px
+  );
+  border: 1px solid var(--gap);
+  min-width: 2px;
+}
+
+.gauge-delta .gauge-name,
+.gauge-delta .gauge-value {
+  color: #8a5e05;
+  font-weight: 600;
+}
+
+.gauge-axis {
+  padding-top: 0.25rem;
+}
+
+.gauge-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  color: var(--ink-3);
+  border-top: 1px solid var(--line);
+  padding-top: 0.25rem;
+}
+
+@media (max-width: 40rem) {
+  .gauge-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .gauge-value {
+    text-align: left;
+  }
+}
+
+/* 硬性门槛画在标尺之外 —— 它不进综合分，视觉上也不该混进去 */
+.gate-stamps {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
+.gate-stamp {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--risk);
+  border: 1px solid var(--risk);
+  background: var(--risk-wash);
+  border-radius: 0.1875rem;
+  padding: 0.1875rem 0.5rem;
+  margin: 0 0.375rem 0.375rem 0;
+}
+
+/* ---------- 控件 ---------- */
+
+label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin: 0.875rem 0 0.3125rem;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  width: 100%;
+  padding: 0.5rem 0.6875rem;
+  border: 1px solid var(--line);
+  border-radius: 0.3125rem;
+  background: var(--surface);
+  color: inherit;
+}
+
+textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+button {
+  font: inherit;
+  font-weight: 550;
+  border: 1px solid var(--line);
+  border-radius: 0.3125rem;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.4375rem 0.9375rem;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--ink-3);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.go {
+  background: var(--ground);
+  border-color: var(--ground);
+  color: #fff;
+}
+
+.go:hover:not(:disabled) {
+  background: #000;
+  border-color: #000;
+}
+
+:focus-visible {
+  outline: 2px solid var(--capability);
+  outline-offset: 2px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.875rem;
+}
+
+/* ---------- 状态标记 ---------- */
+
+.tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--line);
+  border-radius: 0.1875rem;
+  padding: 0.0625rem 0.4375rem;
+  white-space: nowrap;
+}
+
+.tag[data-t="strong"],
+.tag[data-t="confirmed"] {
+  color: var(--confirmed);
+  border-color: var(--confirmed);
+  background: var(--confirmed-wash);
+}
+
+/* 「有经历但没写」用琥珀 —— 与差距同色，因为它就是差距的来源 */
+.tag[data-t="unexpressed"] {
+  color: #8a5e05;
+  border-color: var(--gap);
+  background: var(--gap-wash);
+}
+
+.tag[data-t="gap"],
+.tag[data-t="conflict"],
+.tag[data-t="risk"] {
+  color: var(--risk);
+  border-color: var(--risk);
+  background: var(--risk-wash);
+}
+
+.tag[data-t="inference"] {
+  color: #8a5e05;
+  border-color: var(--gap);
+  background: var(--gap-wash);
+}
+
+.tag[data-t="jd_fact"] {
+  color: var(--confirmed);
+  border-color: var(--confirmed);
+  background: var(--confirmed-wash);
+}
+
+/* ---------- 列表与表格 ---------- */
+
+.plain {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rows > li {
+  border-top: 1px solid var(--line-2);
+  padding: 0.8125rem 0;
+}
+
+.rows > li:first-child {
+  border-top: 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.75rem 0;
+  font-size: 0.9375rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--line-2);
+  padding: 0.4375rem 0.5rem;
+  text-align: left;
+}
+
+thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  border-bottom-color: var(--line);
+}
+
+td.num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 提示条 ---------- */
+
+.alert,
+.note,
+.recover {
+  border-radius: 0.3125rem;
+  padding: 0.8125rem 1rem;
+  margin: 0.875rem 0;
+  font-size: 0.9375rem;
+}
+
+.alert {
+  background: var(--risk-wash);
+  border-left: 3px solid var(--risk);
+}
+
+.note {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.recover {
+  background: var(--gap-wash);
+  border-left: 3px solid var(--gap);
+}
+
+.empty {
+  border: 1px dashed var(--line);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+/* ---------- 动效：只有一处 ---------- */
+
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.gauge-fill {
+  animation: draw 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: left;
+}
+
+.gauge-fill[data-metric="presentation"] {
+  animation-delay: 0.32s;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.gauge-delta {
+  animation: fade 0.4s ease-out 0.72s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge-fill,
+  .gauge-delta {
+    animation: none;
+  }
+}
